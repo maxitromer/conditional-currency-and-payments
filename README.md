@@ -3,6 +3,9 @@ IMPORTANT! This is a internal development just for testing that currently works 
 
 # Country Based Payments for Woocommerce
 
+
+Tested up to Woocommerce 4.5.2
+
 Integrated with `Woocommerce Subscriptions`.
 
 With this plugin you can upgrade currencies automatically using 3 different currency converters for more security and stability (if the  converter doesnt work the plugin will try with the next one).

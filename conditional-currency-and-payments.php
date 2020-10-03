@@ -4,14 +4,14 @@
 Plugin Name: Conditional Currency and Payments for Woocommerce
 Plugin URI: https://github.com/maxitromer/conditional-currency-and-payments
 Description: Change the (auto-updated) currency and select between your Payment Gateways based on conditions
-Version: 0.1.1
+Version: 0.2.0
 Author: Maxi Tromer
 Author URI: https://github.com/maxitromer
 Developer: Maxi Tromer
 Developer URI: https://github.com/maxitromer
 GitHub Plugin URI: https://github.com/maxitromer/conditional-currency-and-payments
 WC requires at least: 3.0
-WC tested up to: 3.8.1
+WC tested up to: 4.5.2
 Text Domain: conditional-currency-and-payments
 */
 
@@ -231,61 +231,69 @@ function payment_gateway_disable_country( $available_gateways ) {
 
     if ( is_admin() ) return $available_gateways;
 
-    global $woocommerce;
-
-    $my_country = $woocommerce->customer->get_billing_country();
-
-
-    // If the billing country is ARGENTINA
-    if( $my_country == 'AR') {
-
-		$subscriptions_in_cart = FALSE;
-
-		// Check the products in the cart to find subscriptions
-    	$cart = WC()->cart->get_cart();
+	$subscriptions_in_cart = FALSE;
  
-		foreach( $cart as $cart_item ){
-		 
-		    $product = wc_get_product( $cart_item['product_id'] );
-		 
-			
-		    if ( $product->get_type() == 'subscription' OR $product->get_type() == 'variable-subscription' ) $subscriptions_in_cart = TRUE;
+	// Check the products in the cart to find subscriptions
+	$cart = WC()->cart->get_cart();
+
+	foreach( $cart as $cart_item ){
+		
+		$product = wc_get_product( $cart_item['product_id'] );
+		
+		
+		if ( $product->get_type() == 'subscription' OR $product->get_type() == 'variable-subscription' ) $subscriptions_in_cart = TRUE;
+
+	}
+
+	// If there are subscription products ...
+	if( $subscriptions_in_cart == TRUE ) {
+
+		// Disable Mercado Pago Personalizado con Tarjetas (Payment Gateway)
+		if ( isset( $available_gateways['woo-mercado-pago-custom'] ) ) {
+
+			unset( $available_gateways['woo-mercado-pago-custom'] );
 
 		}
 
-		// If there are subscription products (user can pay only with Stripe)
-	    if( $subscriptions_in_cart == TRUE ) {
+		// Disable Mercado Pago Personalizado con Efectivo (Payment Gateway)
+		if ( isset( $available_gateways['woo-mercado-pago-ticket'] ) ) {
 
-	    	// Disable Mercado Pago Personalizado con Tarjetas (Payment Gateway)
-		    if ( isset( $available_gateways['woo-mercado-pago-custom'] ) ) {
+			unset( $available_gateways['woo-mercado-pago-ticket'] );
 
-		        unset( $available_gateways['woo-mercado-pago-custom'] );
+		}		    
 
-		    }
+		// Disable Western Union as Payment Gateway
+		if ( isset( $available_gateways['wunion'] ) ) {
 
-		    // Disable Mercado Pago Personalizado con Efectivo (Payment Gateway)
-		    if ( isset( $available_gateways['woo-mercado-pago-ticket'] ) ) {
+			unset( $available_gateways['wunion'] );
 
-		        unset( $available_gateways['woo-mercado-pago-ticket'] );
+		}
+		
+		// Disable Paypal Express as Payment Gateway
+		if ( isset( $available_gateways['ppec_paypal'] ) ) {
 
-		    }		    
+			unset( $available_gateways['ppec_paypal'] );
 
-		    // Disable Western Union as Paypament Gateway
-		    if ( isset( $available_gateways['wunion'] ) ) {
+		}	
 
-		        unset( $available_gateways['wunion'] );
+	// If there are not subscription products ...  
+	} else {
+	
+		global $woocommerce;
+
+	    $my_country = $woocommerce->customer->get_billing_country();
+
+		// If the billing country is ARGENTINA
+	    if( $my_country == 'AR') {
+
+			// Disable Paypal Express as Payment Gateway
+		    if ( isset( $available_gateways['ppec_paypal'] ) ) {
+
+		        unset( $available_gateways['ppec_paypal'] );
 
 		    }	
 
-		// If there are not subscription products (user can pay only with Mercado Pago)  
-		} else {
-
-		    if ( isset( $available_gateways['stripe'] ) ) {
-
-		        unset( $available_gateways['stripe'] );
-
-		    }
-
+			// Disable Western Union
 		    if ( isset( $available_gateways['wunion'] ) ) {
 
 		        unset( $available_gateways['wunion'] );
@@ -298,36 +306,36 @@ function payment_gateway_disable_country( $available_gateways ) {
 		        unset( $available_gateways['woo-mercado-pago-ticket'] );
 
 		    }
-    
-		}
 
-	// If the user is not from ARGENTINA only can pay with Stripe
-    } else {
+		// If the user is not from ARGENTINA only can pay with Stripe
+		} else {
 
-		// Disable Mercado Pago Personalizado con Tarjetas (Payment Gateway)
-	    if ( isset( $available_gateways['woo-mercado-pago-custom'] ) ) {
+			// Disable Mercado Pago Personalizado con Tarjetas (Payment Gateway)
+			if ( isset( $available_gateways['woo-mercado-pago-custom'] ) ) {
 
-	        unset( $available_gateways['woo-mercado-pago-custom'] );
+				unset( $available_gateways['woo-mercado-pago-custom'] );
 
-	    }
+			}
 
-		// Disable Mercado Pago Personalizado con Efectivo (Payment Gateway)
-	    if ( isset( $available_gateways['woo-mercado-pago-ticket'] ) ) {
+			// Disable Mercado Pago Personalizado con Efectivo (Payment Gateway)
+			if ( isset( $available_gateways['woo-mercado-pago-ticket'] ) ) {
 
-	        unset( $available_gateways['woo-mercado-pago-ticket'] );
+				unset( $available_gateways['woo-mercado-pago-ticket'] );
 
-	    }
+			}
 
-	    // If the Tickets Payments Variable is not TRUE disable Western Union as Paypament Gateway
-	    if ( isset( $available_gateways['wunion'] ) && WC()->session->get("alt_pay") !== "true" ) {
+			// If the Tickets Payments Variable is not TRUE disable Western Union as Paypament Gateway
+			if ( isset( $available_gateways['wunion'] ) && WC()->session->get("alt_pay") !== "true" ) {
 
-	        unset( $available_gateways['wunion'] );
+				unset( $available_gateways['wunion'] );
 
-	    }	
+			}	
 
-    }
+		}	
 
-    return $available_gateways;
+	}
+
+	return $available_gateways;
 
 }
 
@@ -467,8 +475,8 @@ function add_price_multiplier_to_variation_prices_hash( $hash ) {
 }
 
 
-// Fire the filter functions after the site is loaded
-function fire_filters () {
+// Fire the currency functions after the site is loaded
+function fire_currency_filters () {
 
 	// Change the currency symbol by country
 	add_filter('woocommerce_currency_symbol', 'change_existing_currency_symbol', 10, 2);
@@ -486,9 +494,17 @@ function fire_filters () {
 	// Handling price caching
 	add_filter( 'woocommerce_get_variation_prices_hash', 'add_price_multiplier_to_variation_prices_hash', 99, 1 );
 
+};
+
+// add_action( 'wp_loaded', 'fire_currency_filters' );
+
+
+// Fire the country functions after the site is loaded
+function fire_country_filters () {
+
 	// WooCommerce Disable Payment Gateway for a Specific Country
 	add_filter( 'woocommerce_available_payment_gateways', 'payment_gateway_disable_country' );
 
 };
 
-add_action( 'wp_loaded', 'fire_filters' );
+add_action( 'wp_loaded', 'fire_country_filters' );
