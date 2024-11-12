@@ -4,7 +4,7 @@
 Plugin Name: Conditional Currency and Payments for Woocommerce
 Plugin URI: https://github.com/maxitromer/conditional-currency-and-payments
 Description: Change the (auto-updated) currency and select between your Payment Gateways based on conditions
-Version: 0.2.0
+Version: 0.2.1
 Author: Maxi Tromer
 Author URI: https://github.com/maxitromer
 Developer: Maxi Tromer
