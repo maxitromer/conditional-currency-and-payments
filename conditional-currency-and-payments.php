@@ -268,6 +268,13 @@ function payment_gateway_disable_country( $available_gateways ) {
 			unset( $available_gateways['wunion'] );
 
 		}
+
+		// Disable Cash on Delivery as Payment Gateway (used as WU alternative)
+		if ( isset( $available_gateways['cod'] ) ) {
+
+			unset( $available_gateways['cod'] );
+
+		}		
 		
 		// Disable Paypal Express as Payment Gateway
 		if ( isset( $available_gateways['ppec_paypal'] ) ) {
@@ -286,21 +293,27 @@ function payment_gateway_disable_country( $available_gateways ) {
 		// If the billing country is ARGENTINA
 	    if( $my_country == 'AR') {
 
-			// Disable Paypal Express as Payment Gateway
+		    // Disable Paypal Express as Payment Gateway
 		    if ( isset( $available_gateways['ppec_paypal'] ) ) {
 
 		        unset( $available_gateways['ppec_paypal'] );
 
 		    }	
 
-			// Disable Western Union
+		    // Disable Western Union
 		    if ( isset( $available_gateways['wunion'] ) ) {
 
 		        unset( $available_gateways['wunion'] );
 
-		    }		    
+		    }
+		    
+		    // Disable Cash on Delivery as Payment Gateway (used as WU alternative)
+		    if ( isset( $available_gateways['cod'] ) ) {
 
-			// If the Tickets Payments Variable is not TRUE disable Mercado Pago Personalizado con Efectivo (Payment Gateway)
+			unset( $available_gateways['cod'] );
+		    }
+		    
+		    // If the Tickets Payments Variable is not TRUE disable Mercado Pago Personalizado con Efectivo (Payment Gateway)
 		    if ( isset( $available_gateways['woo-mercado-pago-ticket'] ) && WC()->session->get("alt_pay") !== "true" ) {
 
 		        unset( $available_gateways['woo-mercado-pago-ticket'] );
@@ -329,7 +342,14 @@ function payment_gateway_disable_country( $available_gateways ) {
 
 				unset( $available_gateways['wunion'] );
 
-			}	
+			}
+		    
+			// If the Tickets Payments Variable is not TRUE disable Cash on Delivery (alternative to WU Gateway) as Paypament Gateway
+			if ( isset( $available_gateways['cod'] ) && WC()->session->get("alt_pay") !== "true" ) {
+
+				unset( $available_gateways['cod'] );
+
+			}		    
 
 		}	
 
