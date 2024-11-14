@@ -4,7 +4,7 @@
 Plugin Name: Conditional Currency and Payments for Woocommerce
 Plugin URI: https://github.com/maxitromer/conditional-currency-and-payments
 Description: Change the (auto-updated) currency and select between your Payment Gateways based on conditions
-Version: 0.2.1
+Version: 0.2.2
 Author: Maxi Tromer
 Author URI: https://github.com/maxitromer
 Developer: Maxi Tromer
@@ -269,10 +269,10 @@ function payment_gateway_disable_country( $available_gateways ) {
 
 		}
 
-		// Disable Cash on Delivery as Payment Gateway (used as WU alternative)
-		if ( isset( $available_gateways['cod'] ) ) {
+		// Disable Cheque as Payment Gateway (used as WU alternative)
+		if ( isset( $available_gateways['cheque'] ) ) {
 
-			unset( $available_gateways['cod'] );
+			unset( $available_gateways['cheque'] );
 
 		}		
 		
@@ -307,10 +307,10 @@ function payment_gateway_disable_country( $available_gateways ) {
 
 		    }
 		    
-		    // Disable Cash on Delivery as Payment Gateway (used as WU alternative)
-		    if ( isset( $available_gateways['cod'] ) ) {
+		    // Disable Cheque as Payment Gateway (used as WU alternative)
+		    if ( isset( $available_gateways['cheque'] ) ) {
 
-			unset( $available_gateways['cod'] );
+			unset( $available_gateways['cheque'] );
 		    }
 		    
 		    // If the Tickets Payments Variable is not TRUE disable Mercado Pago Personalizado con Efectivo (Payment Gateway)
@@ -344,10 +344,10 @@ function payment_gateway_disable_country( $available_gateways ) {
 
 			}
 		    
-			// If the Tickets Payments Variable is not TRUE disable Cash on Delivery (alternative to WU Gateway) as Paypament Gateway
-			if ( isset( $available_gateways['cod'] ) && WC()->session->get("alt_pay") !== "true" ) {
+			// If the Tickets Payments Variable is not TRUE disable Cheque (alternative to WU Gateway) as Paypament Gateway
+			if ( isset( $available_gateways['cheque'] ) && WC()->session->get("alt_pay") !== "true" ) {
 
-				unset( $available_gateways['cod'] );
+				unset( $available_gateways['cheque'] );
 
 			}		    
 
